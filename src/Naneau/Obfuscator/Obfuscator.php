@@ -87,10 +87,15 @@ class Obfuscator
                 'obfuscator.file',
                 new FileEvent($file)
             );
+            if (!preg_match('#'.$directory.'/vendor#', $file->getPath())) {
+                // Write obfuscated source
+                $content = $this->obfuscateFileContents($file, $ignoreError);
+            } else {
+                $content = file_get_contents($file);
+            }
 
-            // Write obfuscated source
-            file_put_contents($file, $this->obfuscateFileContents($file,
-                $ignoreError));
+            file_put_contents($file, $content);
+
 
             // Strip whitespace if required
             if ($stripWhitespace) {
@@ -233,7 +238,7 @@ class Obfuscator
      * Obfuscate a single file's contents
      *
      * @param  string $file
-     * @param  boolean $ignoreError if true, do not throw an Error and 
+     * @param  boolean $ignoreError if true, do not throw an Error and
      *                              exit, but continue with next file
      * @return string obfuscated contents
      **/
